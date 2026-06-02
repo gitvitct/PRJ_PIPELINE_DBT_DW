@@ -1,7 +1,7 @@
-name: 'sales_pipeline'
+name: 'sales_pipeline_dw'
 version: '1.0.0'
 
-profile: 'sales_pipeline'
+profile: 'sales_pipeline_dw'
 
 model-paths: ["models"]
 seed-paths: ["seeds"]
@@ -18,10 +18,10 @@ clean-targets:
 log-path: logs
 
 models:
-  sales_pipeline:
+  sales_pipeline_dw:
   
-    staging:
-      +materialized: view
+    silver:
+      +materialized: incremental
 
-    marts:
+    gold:
       +materialized: table

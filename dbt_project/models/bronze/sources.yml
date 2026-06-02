@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: bronze
+
+    schema: public
+
+    tables:
+
+      - name: raw_sales
+
+        columns:
+
+          - name: sale_id
+
+            tests:
+              - not_null
+
+      - name: raw_customers
+
+        columns:
+
+          - name: customer_id
+
+            tests:
+              - not_null

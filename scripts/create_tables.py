@@ -1,31 +1,38 @@
-
-# scripts/create_tables.py
-
 from scripts.db_connection import get_connection
 
-
-def create_table():
+def create_tables():
 
     conn = get_connection()
+    cur = conn.cursor()
 
-    cursor = conn.cursor()
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS raw_customers(
 
-    cursor.execute("""
-            CREATE TABLE IF NOT EXISTS raw_sales (
-                order_id INT,
-                customer_id INT,
-                amount NUMERIC,
-                purchase_date TIMESTAMP
-            )         
+        customer_id INTEGER PRIMARY KEY,
+        customer_name VARCHAR(100),
+        city VARCHAR(100),
+
+        updated_at TIMESTAMP
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS raw_sales(
+
+        sale_id SERIAL ,
+                 
+
+        customer_id INTEGER,
+
+        amount NUMERIC(12,2),
+
+        sale_date TIMESTAMP,
+
+        updated_at TIMESTAMP
+    )
     """)
 
     conn.commit()
 
-    cursor.close()
+    cur.close()
     conn.close()
-
-    print("Tabela criada com sucesso.")
-
-
-if __name__ == "__main__":
-    create_table()

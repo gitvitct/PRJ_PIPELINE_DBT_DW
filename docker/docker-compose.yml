@@ -108,6 +108,7 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${AIRFLOW_DB}
+      PYTHONPATH: /opt/airflow:/opt/airflow/scripts
 
     command: webserver
 
@@ -150,6 +151,7 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${AIRFLOW_DB}
+      PYTHONPATH: /opt/airflow:/opt/airflow/scripts
 
     command: scheduler
 
@@ -188,6 +190,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${AIRFLOW_DB}
+      PYTHONPATH: /opt/airflow:/opt/airflow/scripts
 
     command: triggerer
 

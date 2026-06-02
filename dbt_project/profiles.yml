@@ -1,6 +1,6 @@
-sales_pipeline:
+sales_pipeline_dw:
 
-  target: "{{ env_var('DW_DB', 'dev') }}"
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
 
   outputs:
 
