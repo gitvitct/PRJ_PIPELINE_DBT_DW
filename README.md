@@ -2,294 +2,79 @@
 - 🇺🇸 English (default)
 - 🇧🇷 [Português](docs/README_PT.md)
 
-# 🚀 Installation, Execution and Architecture – PRJ_PIPE_PG_DBT_AIRFLOW
+# 🚀 PRJ_PIPELINE_DBT_DW
 
-## 🧠 1. Overview
+A modern Data Warehouse project built with **dbt**, **Apache Airflow**, **PostgreSQL**, **Docker**, and **Pytest**, following the **Medallion Architecture (Bronze → Silver → Gold)** and **Dimensional Modeling (Kimball)** principles.
 
-This project implements a modern data pipeline using Apache Airflow, dbt, PostgreSQL, Docker, and Pytest, simulating a complete workflow for data ingestion, validation, transformation, and analytics delivery.
+This project simulates a complete analytical data platform, including data ingestion, transformation, historical tracking (SCD Type 2), fact and dimension modeling, orchestration, testing, and documentation.
 
-### Technologies Used
+---
 
-* **PostgreSQL** → Data Warehouse and Airflow metadata storage
-* **Apache Airflow** → Pipeline orchestration
-* **dbt (Data Build Tool)** → ELT transformations and analytical layer
-* **Docker Compose** → Environment provisioning and container management
-* **Pytest** → Unit, integration, and end-to-end testing
+# 📋 Table of Contents
 
-### Data Flow
+- [Project Overview](#-project-overview)
+- [Architecture](#-architecture)
+- [Project Structure](#-project-structure)
+- [Technologies Used](#-technologies-used)
+- [Data Pipeline Flow](#-data-pipeline-flow)
+- [Data Modeling](#-data-modeling)
+- [Snapshots (SCD Type 2)](#-snapshots-scd-type-2)
+- [Airflow DAGs](#-airflow-dags)
+- [Testing](#-testing)
+- [Installation](#-installation)
+- [Execution](#-execution)
+- [Useful Commands](#-useful-commands)
+- [Future Improvements](#-future-improvements)
+
+---
+
+# 🧠 Project Overview
+
+The objective of this project is to demonstrate an end-to-end modern Data Engineering workflow.
+
+The pipeline performs:
+
+- Data ingestion into PostgreSQL
+- Data quality validation
+- Data transformation using dbt
+- Historical tracking with snapshots (SCD Type 2)
+- Dimensional modeling
+- Fact table generation
+- Workflow orchestration with Airflow
+- Automated testing with Pytest and dbt tests
+
+---
+
+# 🏗️ Architecture
 
 ```text
-PostgreSQL (raw_sales)
-        ↓
-Airflow DAG (ingestion + validation)
-        ↓
-dbt Models (staging + marts)
-        ↓
-Analytical Tables (sales_summary)
-```
-
----
-
-## 📦 2. Prerequisites
-
-Before installation, ensure the following tools are available:
-
-```bash
-Docker Engine 20+
-Docker Compose v2+
-Git
-WSL2 (Windows) or Linux/MacOS
-```
-
-### Verify Installation
-
-```bash
-docker --version
-docker compose version
-git --version
-```
-
----
-
-## 📥 3. Clone the Repository
-
-```bash
-git clone https://github.com/gitvitct/PRJ_PIPE_PG_DBT_AIRFLOW_GIT.git
-
-cd ${prj_dir}/PRJ_PIPE_PG_DBT_AIRFLOW_GIT
-```
-
----
-
-## ⚙️ 4. Environment Initialization (Bootstrap)
-
-Navigate to the Docker directory:
-
-```bash
-cd ${prj_dir}/PRJ_PIPE_PG_DBT_AIRFLOW_GIT/docker
-```
-
-Grant execution permission:
-
-```bash
-chmod +x bootstrap.sh
-```
-
-Start the complete environment:
-
-```bash
-./bootstrap.sh
-```
-
-### What the Bootstrap Script Does
-
-The script automatically performs the following tasks:
-
-* Creates the `.env` file
-* Defines environment variables
-* Creates PostgreSQL databases (`AIRFLOW_DB` and `DW_DB`)
-* Configures default credentials (`admin/admin`)
-* Builds Docker images (Airflow, dbt, PostgreSQL)
-* Starts Docker Compose services
-* Creates log directories and permissions
-* Initializes the Airflow metadata database
-
-### Services Started
-
-* PostgreSQL
-* pgAdmin
-* Airflow Webserver
-* Airflow Scheduler
-* Airflow Triggerer
-
----
-
-## 🧩 5. Infrastructure Validation
-
-Verify running containers:
-
-```bash
-docker ps
-```
-
-Expected output:
-
-```text
-postgres              (healthy)
-airflow-webserver     (healthy)
-airflow-scheduler     (healthy)
-airflow-triggerer     (running)
-dpage/pgadmin4        (running)
-```
-
----
-
-## 📊 6. Running Tests (Pytest)
-
-Execute the test suite:
-
-```bash
-cd ${prj_dir}/PRJ_PIPE_PG_DBT_AIRFLOW_GIT/docker
-
-docker compose exec airflow-webserver pytest -v -p no:cacheprovider
-```
-
----
-
-## 🌐 7. Accessing the Airflow UI
-
-### URL
-
-```text
-http://localhost:8080
-```
-
-### Default Credentials
-
-```text
-Username: airflow
-Password: airflow
-```
-
----
-
-## 🔄 8. Executing the Pipeline (DAG)
-
-Within the Airflow UI:
-
-### Enable DAG
-
-```text
-sales_pipeline
-```
-
-### Trigger DAG Manually
-
-Click **Trigger DAG**.
-
-### Pipeline Stages
-
-```text
-create_table  → Create raw schema and tables
-load_sales    → Data ingestion and validation
-run_dbt       → Analytical transformations
-```
-
----
-
-## 🗄️ 9. Database Validation
-
-### Connect via CLI
-
-```bash
-docker exec -it docker-postgres-1 psql -U admin -d sales_dw
-```
-
-or
-
-```bash
-psql -h postgres -p 5432 -U admin -d sales_dw
-```
-
-### Verify Tables
-
-```sql
-\dt
-
-SELECT * FROM public.raw_sales LIMIT 10;
-
-SELECT * FROM public.sales_summary;
-```
-
-Expected output:
-
-```text
-Schema |      Name       | Type  | Owner
--------+-----------------+-------+-------
-public | raw_sales       | table | admin
-public | sales_summary   | table | admin
-```
-
----
-
-## 🧪 10. Running dbt Manually (Optional)
-
-Access the Airflow container:
-
-```bash
-docker exec -it docker-airflow-webserver-1 bash
-```
-
-Navigate to the dbt project:
-
-```bash
-cd /opt/airflow/dbt_project
-```
-
-Execute:
-
-```bash
-dbt debug --profiles-dir .
-
-dbt run --profiles-dir .
-```
-
----
-
-## 🧯 11. Dead Letter Queue (Invalid Record Handling)
-
-Location:
-
-```text
-/opt/airflow/data/deadletter.json
-```
-
-Within the `sales_pipeline`, the **Dead Letter Queue (DLQ)** stores records that fail data quality validations during the ingestion process (`load_sales`).
-
-This mechanism prevents invalid records from being silently discarded and enables auditing, troubleshooting, and future reprocessing.
-
-### Example
-
-```json
-{
-  "record": {
-    "order_id": 14,
-    "customer_id": 16,
-    "amount": -11.28,
-    "purchase_date": "2026-05-31 20:33:31"
-  },
-  "error": "Invalid amount"
-}
-```
-
----
-
-## 📊 12. Monitoring and Observability
-
-### Airflow Logs
-
-```bash
-docker logs -f docker-airflow-scheduler-1
-
-docker logs -f docker-airflow-webserver-1
-```
-
-### Custom Pipeline Logs
-
-```bash
-tail -f logs/pipeline.log
-```
-
----
-
-## 🔁 13. Environment Reset / Rebuild
-
-To completely rebuild the environment:
-
-```bash
-docker compose down -v
-
-docker compose up -d
+                +------------------+
+                |   Source Data    |
+                +---------+--------+
+                          |
+                          v
+                +------------------+
+                |      Bronze      |
+                | Raw Source Data  |
+                +---------+--------+
+                          |
+                          v
+                +------------------+
+                |      Silver      |
+                | Cleaned Data     |
+                | Business Rules   |
+                +---------+--------+
+                          |
+                          v
+                +------------------+
+                |       Gold       |
+                | Facts & Dims     |
+                +---------+--------+
+                          |
+                          v
+                +------------------+
+                | BI / Analytics   |
+                +------------------+
 ```
 
 ---
@@ -297,84 +82,438 @@ docker compose up -d
 # 📂 Project Structure
 
 ```text
-PRJ_PIPE_PG_DBT_AIRFLOW/
+PRJ_PIPELINE_DBT_DW
 │
 ├── dags/
-│   └── sales_pipeline.py
-│
-├── scripts/
-│   ├── create_tables.py
-│   ├── load_sales.py
-│   ├── validation.py
-│   ├── db_connection.py
-│   ├── logger_config.py
-│   └── make_deadletter_json.py
-│
-├── dbt_project/
-│   ├── models/
-│   │   ├── staging/
-│   │   │   └── stg_sales.sql
-│   │   └── marts/
-│   │       └── sales_summary.sql
-│   │
-│   ├── logs/
-│   │   └── dbt.log
-│   │
-│   ├── dbt_project.yml
-│   └── profiles.yml
-│
-├── tests/
-│   ├── unit/
-│   │   ├── test_db_connection.py
-│   │   ├── test_deadletter.py
-│   │   ├── test_logger.py
-│   │   └── test_validation.py
-│   │
-│   ├── integration/
-│   │   ├── test_create_tables.py
-│   │   ├── test_insert_raw_sales.py
-│   │   ├── test_load_sales.py
-│   │   └── test_postgres_connection.py
-│   │
-│   ├── airflow/
-│   │   ├── test_dag_integrity.py
-│   │   ├── test_dag_loaded.py
-│   │   └── test_dag_tasks.py
-│   │
-│   ├── dbt/
-│   │   ├── test_dbt_mart.py
-│   │   ├── test_dbt_models.py
-│   │   └── test_dbt_staging.py
-│   │
-│   └── e2e/
-│       └── test_end_to_end_pipeline.py
+│   ├── customer_dimension_pipeline.py
+│   └── sales_pipeline_dw.py
 │
 ├── data/
-│   └── deadletter/
 │
-├── logs/
-│   └── pipeline.log
+├── dbt_project/
 │
-├── Dockerfile
-├── docker-compose.yml
+├── models/
+│   ├── bronze/
+│   │   └── sources.yml
+│   │
+│   ├── silver/
+│   │
+│   ├── gold/
+│   │   ├── dimensions/
+│   │   └── facts/
+│   │
+│   └── marts/
+│
+├── snapshots/
+│   └── customer_snapshot.sql
+│
+├── scripts/
+│
+├── tests/
+│
+├── workflows/
+│
+├── docker/
+│
+├── docs/
+│
+├── dbt_project.yml
+├── profiles.yml
 ├── requirements.txt
+├── pytest.ini
 └── README.md
 ```
 
 ---
 
-## 🎯 Project Objectives
+# ⚙️ Technologies Used
 
-This project demonstrates practical experience with:
+| Technology | Purpose |
+|------------|----------|
+| Python | Pipeline Development |
+| PostgreSQL | Data Warehouse |
+| dbt Core | Data Transformation |
+| Apache Airflow | Workflow Orchestration |
+| Docker | Containerization |
+| Pytest | Unit Testing |
+| GitHub Actions | CI/CD |
+| SQL | Data Modeling |
 
-* Data Engineering fundamentals
-* ELT pipelines using dbt
-* Workflow orchestration with Airflow
-* Containerized environments using Docker
-* Data quality validation
-* Dead Letter Queue implementation
-* PostgreSQL Data Warehousing
-* Automated testing with Pytest
-* Analytics-ready data modeling
+---
 
-It was designed as a portfolio project to showcase modern Data Engineering best practices and production-like architecture.
+# 🔄 Data Pipeline Flow
+
+## 1. Bronze Layer
+
+Raw data is ingested from source systems and registered as dbt sources.
+
+Example:
+
+```sql
+source('public', 'customers')
+source('public', 'sales')
+```
+
+### Responsibilities
+
+- Store raw data
+- Preserve source structure
+- Enable lineage tracking
+
+---
+
+## 2. Silver Layer
+
+Data is standardized and cleansed.
+
+Typical transformations:
+
+- Null handling
+- Data type standardization
+- Deduplication
+- Business rule validation
+
+---
+
+## 3. Gold Layer
+
+Business-ready analytical models.
+
+Contains:
+
+### Dimensions
+
+- Dim Customer
+- Dim Date
+
+### Facts
+
+- Fact Sales
+
+---
+
+# 📊 Data Modeling
+
+This project follows the **Kimball Dimensional Modeling** approach.
+
+## Star Schema
+
+```text
+              +--------------+
+              |  Dim_Date    |
+              +------+-------+
+                     |
+                     |
++--------------+     |
+| Dim_Customer |-----+
++------+-------+     |
+       |             |
+       |             |
+       v             v
+      +------------------+
+      |    Fact_Sales    |
+      +------------------+
+```
+
+### Benefits
+
+- Fast analytical queries
+- Simpler BI integration
+- Better reporting performance
+- Clear business definitions
+
+---
+
+# 🕒 Snapshots (SCD Type 2)
+
+The project uses dbt snapshots to maintain customer history.
+
+File:
+
+```text
+snapshots/customer_snapshot.sql
+```
+
+Tracked fields:
+
+- customer_name
+- city
+- other customer attributes
+
+dbt automatically creates:
+
+```sql
+dbt_valid_from
+dbt_valid_to
+```
+
+This enables:
+
+- Historical analysis
+- Customer evolution tracking
+- Point-in-time reporting
+
+---
+
+# 🌬️ Airflow DAGs
+
+## Customer Dimension Pipeline
+
+```text
+customer_dimension_pipeline.py
+```
+
+Responsible for:
+
+1. Run Snapshot
+2. Build Customer Dimension
+3. Execute Data Quality Tests
+
+---
+
+## Sales Pipeline
+
+```text
+sales_pipeline_dw.py
+```
+
+Responsible for:
+
+1. Load Sales Data
+2. Build Fact Table
+3. Execute dbt Tests
+
+---
+
+# ✅ Testing
+
+## Pytest
+
+Run unit tests:
+
+```bash
+pytest
+```
+
+Or:
+
+```bash
+pytest -v
+```
+
+---
+
+## dbt Tests
+
+Run all tests:
+
+```bash
+dbt test
+```
+
+Examples:
+
+```yaml
+tests:
+  - not_null
+  - unique
+```
+
+---
+
+# 🐳 Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/your-user/PRJ_PIPELINE_DBT_DW.git
+
+cd PRJ_PIPELINE_DBT_DW
+```
+
+---
+
+## Create Virtual Environment
+
+### Linux / Mac
+
+```bash
+python -m venv venv
+
+source venv/bin/activate
+```
+
+### Windows
+
+```bash
+python -m venv venv
+
+venv\Scripts\activate
+```
+
+---
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# 🚀 Execution
+
+## Validate Connection
+
+```bash
+dbt debug
+```
+
+---
+
+## Load Sources
+
+```bash
+dbt seed
+```
+
+---
+
+## Execute Snapshots
+
+```bash
+dbt snapshot
+```
+
+---
+
+## Execute Models
+
+```bash
+dbt run
+```
+
+---
+
+## Execute Tests
+
+```bash
+dbt test
+```
+
+---
+
+## Generate Documentation
+
+```bash
+dbt docs generate
+
+dbt docs serve
+```
+
+---
+
+# 🛠️ Useful Commands
+
+## Run Specific Model
+
+```bash
+dbt run --select dim_customer
+```
+
+---
+
+## Run Fact Models
+
+```bash
+dbt run --select facts
+```
+
+---
+
+## Run Dimensions
+
+```bash
+dbt run --select dimensions
+```
+
+---
+
+## Run Snapshots
+
+```bash
+dbt snapshot
+```
+
+---
+
+## Execute Airflow DAGs
+
+```bash
+airflow dags list
+```
+
+```bash
+airflow dags trigger sales_pipeline_dw
+```
+
+```bash
+airflow dags trigger customer_dimension_pipeline
+```
+
+---
+
+# 📈 CI/CD
+
+GitHub Actions can be configured to automatically execute:
+
+```text
+✔ dbt debug
+✔ dbt run
+✔ dbt test
+✔ pytest
+```
+
+On every:
+
+- Push
+- Pull Request
+
+---
+
+# 🔮 Future Improvements
+
+- CDC integration using Debezium
+- Kafka event ingestion
+- Schema Registry integration
+- Data Quality monitoring with Great Expectations
+- Data Observability
+- Cloud deployment (AWS / Azure / GCP)
+- dbt Semantic Layer
+- Data Catalog integration
+- Incremental Fact Processing
+- Lakehouse Architecture support
+
+---
+
+# 👨‍💻 Author
+
+**Vitor Melo**
+
+Data Engineer | Analytics Engineer | BI Specialist
+
+### Expertise
+
+- Data Warehousing
+- Dimensional Modeling
+- dbt
+- Apache Airflow
+- PostgreSQL
+- Python
+- Kafka & CDC
+- Oracle Analytics
+- ETL / ELT Pipelines
+
+---
+
+⭐ If you found this project useful, consider giving it a star on GitHub.
