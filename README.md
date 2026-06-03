@@ -1,3 +1,7 @@
+🌎 Language:
+- 🇺🇸 English (default)
+- 🇧🇷 [Português](README.pt-BR.md)
+
 ## Documentation
 
 - 🇺🇸 English
