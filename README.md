@@ -1,12 +1,6 @@
 🌎 Language:
 - 🇺🇸 English (default)
-- 🇧🇷 [Português](README.pt-BR.md)
-
-## Documentation
-
-- 🇺🇸 English
 - 🇧🇷 [Português](docs/README_PT.md)
-
 
 # 🚀 Installation, Execution and Architecture – PRJ_PIPE_PG_DBT_AIRFLOW
 
