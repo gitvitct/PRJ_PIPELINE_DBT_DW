@@ -1,7 +1,7 @@
 ## Documentation
 
 - 🇺🇸 English
-- 🇧🇷 [Português](docs/README_PT_BR.md)
+- 🇧🇷 [Português](README_PT_BR.md)
 
 # 🚀 Instalação, Execução e Arquitetura – PRJ_PIPE_PG_DBT_AIRFLOW 
 ## 🧠 1. Visão Geral
