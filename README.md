@@ -1,47 +1,552 @@
-🌎 Language:
-- 🇺🇸 English (default)
-- 🇧🇷 [Português](docs/README_PT.md)
+
+
+
+
+Resgatar oferta
+
+projeto_documentacao(1).zip
+Arquivo zip
+crie um readme e docuemntacao do ficherio anexado:
+
+Pensamento interrompido
+Analisei o projeto compactado e ele já possui uma estrutura bastante completa de Engenharia de Dados com:
+
+Apache Airflow
+
+dbt
+
+PostgreSQL
+
+Docker
+
+Pytest
+
+Arquitetura Medallion (Bronze → Silver → Gold)
+
+Modelagem Dimensional Kimball
+
+Snapshot SCD Type 2
+
+Data Quality
+
+Dead Letter Queue
+
+Abaixo está uma documentação profissional que você pode utilizar como README.md principal do repositório.
+
+🚀 PRJ_PIPELINE_DBT_DW
+Modern Data Warehouse project built with Python, PostgreSQL, Apache Airflow, dbt, Docker and Pytest, implementing Medallion Architecture and Kimball Dimensional Modeling.
+
+📖 Overview
+This project demonstrates a complete end-to-end Data Engineering workflow.
+
+The pipeline simulates the ingestion, validation, transformation, historization and delivery of analytical data through a modern Data Warehouse architecture.
+
+Main Features
+✅ Automated data ingestion
+
+✅ Data quality validation
+
+✅ Dead Letter Queue for invalid records
+
+✅ dbt transformations
+
+✅ Incremental processing
+
+✅ SCD Type 2 implementation
+
+✅ Dimensional Modeling
+
+✅ Fact and Dimension tables
+
+✅ Workflow orchestration with Airflow
+
+✅ Automated testing
+
+🏗️ Architecture
+                +------------------+
+                | Source Systems   |
+                +---------+--------+
+                          |
+                          v
+                +------------------+
+                |      Bronze      |
+                | Raw Data Layer   |
+                +---------+--------+
+                          |
+                          v
+                +------------------+
+                |      Silver      |
+                | Cleansed Data    |
+                | Business Rules   |
+                +---------+--------+
+                          |
+                          v
+                +------------------+
+                |       Gold       |
+                | Facts & Dims     |
+                +---------+--------+
+                          |
+                          v
+                +------------------+
+                | BI / Analytics   |
+                +------------------+
+📂 Project Structure
+PRJ_PIPELINE_DBT_DW
+│
+├── dags/
+│   ├── sales_pipeline_dw.py
+│   └── customer_dimension_pipeline.py
+│
+├── scripts/
+│   ├── create_tables.py
+│   ├── load_customers.py
+│   ├── load_sales.py
+│   ├── validation.py
+│   ├── logger_config.py
+│   ├── db_connection.py
+│   └── make_deadletter_json.py
+│
+├── dbt_project/
+│   ├── models/
+│   │   ├── bronze/
+│   │   ├── silver/
+│   │   └── gold/
+│   │
+│   ├── snapshots/
+│   │   └── customer_snapshot.sql
+│   │
+│   ├── tests/
+│   ├── logs/
+│   ├── profiles.yml
+│   └── dbt_project.yml
+│
+├── tests/
+│
+├── docs/
+│
+├── requirements.txt
+└── README.md
+⚙️ Technologies
+Technology	Purpose
+Python	ETL Development
+PostgreSQL	Data Warehouse
+Apache Airflow	Workflow Orchestration
+dbt Core	Data Transformation
+Docker	Containerization
+Pytest	Automated Testing
+SQL	Data Modeling
+GitHub Actions	CI/CD
+🔄 Pipeline Flow
+Step 1 – Raw Data Creation
+Airflow starts the pipeline by creating source tables:
+
+raw_customers
+customer_id
+customer_name
+city
+updated_at
+raw_sales
+sale_id
+customer_id
+amount
+sale_date
+updated_at
+Step 2 – Customer Load
+Customer records are inserted into the source table.
+
+Features:
+
+Upsert strategy
+
+Random city assignment
+
+Timestamp tracking
+
+Example:
+
+ON CONFLICT(customer_id)
+DO UPDATE
+Step 3 – Sales Load
+Sales are generated automatically.
+
+Features:
+
+Random amounts
+
+Customer assignment
+
+Validation process
+
+Generated fields:
+
+order_id
+customer_id
+amount
+purchase_date
+Step 4 – Data Validation
+Every sale is validated before insertion.
+
+Example rules:
+
+Amount must be greater than zero
+Required fields cannot be null
+Invalid records are redirected to Dead Letter Queue.
+
+Step 5 – Dead Letter Queue
+Invalid records are stored as JSON.
+
+Example:
+
+{
+  "record": {
+    "order_id": 10,
+    "amount": -50
+  },
+  "error": "Amount cannot be negative"
+}
+Benefits:
+
+Error auditing
+
+Reprocessing capability
+
+Data quality monitoring
+
+🥉 Bronze Layer
+The Bronze layer contains raw source data.
+
+Tables:
+
+raw_customers
+raw_sales
+Responsibilities:
+
+Preserve source structure
+
+Store original data
+
+Enable lineage tracking
+
+🥈 Silver Layer
+The Silver layer standardizes and cleanses data.
+
+Models:
+
+stg_customers
+stg_sales
+Transformations:
+
+Data type standardization
+
+Null handling
+
+Data quality checks
+
+Naming conventions
+
+Execution:
+
+dbt run --select silver
+📸 Customer Snapshot (SCD Type 2)
+The project implements historical tracking using dbt snapshots.
+
+Snapshot:
+
+customer_snapshot
+Strategy:
+
+strategy: timestamp
+Tracked field:
+
+updated_at
+Benefits:
+
+Historical customer changes
+
+Point-in-time analysis
+
+Slowly Changing Dimension Type 2
+
+Execution:
+
+dbt snapshot
+🥇 Gold Layer
+The Gold layer contains analytical models.
+
+Dimension: dim_customer
+Stores customer history.
+
+Attributes:
+
+customer_sk
+customer_id
+customer_name
+city
+valid_from
+valid_to
+current_flag
+Characteristics:
+
+Surrogate key
+
+SCD Type 2
+
+Historical tracking
+
+Dimension: dim_date
+Date dimension used by facts.
+
+Attributes:
+
+date_sk
+full_date
+year
+month
+quarter
+day_of_week
+Benefits:
+
+Faster reporting
+
+Standardized calendar analysis
+
+Fact Table: fact_sales
+Central analytical fact table.
+
+Attributes:
+
+sale_id
+customer_sk
+date_sk
+amount
+sale_date
+updated_at
+Relationships:
+
+fact_sales
+    |
+    +---- dim_customer
+    |
+    +---- dim_date
+Execution:
+
+dbt run --select gold.facts
+🔄 Airflow Orchestration
+Main DAG:
+
+sales_pipeline_dw
+Execution Flow:
+
+create_tables
+        ↓
+load_customers
+        ↓
+load_sales
+        ↓
+dbt_silver
+        ↓
+dbt_snapshot
+        ↓
+dbt_dimensions
+        ↓
+dbt_fact
+        ↓
+dbt_test
+Schedule:
+
+@daily
+Catchup:
+
+False
+✅ Data Quality
+dbt tests validate:
+
+not_null
+unique
+relationships
+accepted_values
+Execution:
+
+dbt test
+Benefits:
+
+Data reliability
+
+Referential integrity
+
+Automated quality checks
+
+🧪 Testing
+Framework:
+
+Pytest
+Suggested Tests:
+
+Unit Tests
+validate_sale()
+create_tables()
+load_customers()
+load_sales()
+Integration Tests
+Database Connection
+Data Loading
+dbt Models
+Airflow DAGs
+Execution:
+
+pytest
+🚀 Installation
+Clone Repository
+git clone <repository-url>
+cd PRJ_PIPELINE_DBT_DW
+Create Environment
+python -m venv venv
+Linux / Mac:
+
+source venv/bin/activate
+Windows:
+
+venv\Scripts\activate
+Install Dependencies
+pip install -r requirements.txt
+🐳 Docker Execution
+Build:
+
+docker compose build
+Start:
+
+docker compose up -d
+Verify:
+
+docker ps
+📊 dbt Commands
+Run Silver Models:
+
+dbt run --select silver
+Run Dimensions:
+
+dbt run --select gold.dimensions
+Run Facts:
+
+dbt run --select gold.facts
+Run Everything:
+
+dbt run
+Snapshot:
+
+dbt snapshot
+Tests:
+
+dbt test
+Documentation:
+
+dbt docs generate
+dbt docs serve
+📈 Data Warehouse Model
+               dim_customer
+                     |
+                     |
+                     |
+                fact_sales
+                     |
+                     |
+                     |
+                  dim_date
+Model Type:
+
+Star Schema
+Methodology:
+
+Kimball
+🎯 Learning Objectives
+This project demonstrates:
+
+Data Warehouse Design
+
+Kimball Modeling
+
+Medallion Architecture
+
+Apache Airflow Orchestration
+
+dbt Development
+
+Incremental Processing
+
+SCD Type 2
+
+Data Quality Engineering
+
+PostgreSQL Administration
+
+Docker Containerization
+
+CI/CD Readiness
+
+🔮 Future Improvements
+CDC with Debezium
+
+Kafka Integration
+
+Schema Registry
+
+Great Expectations
+
+Data Contracts
+
+OpenLineage
+
+Data Observability
+
+CI/CD with GitHub Actions
+
+Cloud Deployment (AWS/GCP/Azure)
+
+dbt Semantic Layer
+
+👨‍💻 Author
+Vitor Melo
+
+Data Engineer | BI Engineer | Analytics Engineer
+
+Specialized in Data Warehousing, ETL/ELT, Dimensional Modeling, Apache Airflow, dbt, Kafka, PostgreSQL and Modern Data Platforms.
+
+
+Perfeito, junte toda essas informacoes pra eu copiar e colocar no meu readme
 
 # 🚀 PRJ_PIPELINE_DBT_DW
 
-A modern Data Warehouse project built with **dbt**, **Apache Airflow**, **PostgreSQL**, **Docker**, and **Pytest**, following the **Medallion Architecture (Bronze → Silver → Gold)** and **Dimensional Modeling (Kimball)** principles.
-
-This project simulates a complete analytical data platform, including data ingestion, transformation, historical tracking (SCD Type 2), fact and dimension modeling, orchestration, testing, and documentation.
+Modern Data Warehouse project built with Python, PostgreSQL, Apache Airflow, dbt, Docker and Pytest, implementing Medallion Architecture and Kimball Dimensional Modeling.
 
 ---
 
-# 📋 Table of Contents
+# 📖 Overview
 
-- [Project Overview](#-project-overview)
-- [Architecture](#-architecture)
-- [Project Structure](#-project-structure)
-- [Technologies Used](#-technologies-used)
-- [Data Pipeline Flow](#-data-pipeline-flow)
-- [Data Modeling](#-data-modeling)
-- [Snapshots (SCD Type 2)](#-snapshots-scd-type-2)
-- [Airflow DAGs](#-airflow-dags)
-- [Testing](#-testing)
-- [Installation](#-installation)
-- [Execution](#-execution)
-- [Useful Commands](#-useful-commands)
-- [Future Improvements](#-future-improvements)
+This project demonstrates a complete end-to-end Data Engineering workflow.
 
----
+The pipeline simulates the ingestion, validation, transformation, historization and delivery of analytical data through a modern Data Warehouse architecture.
 
-# 🧠 Project Overview
+## Main Features
 
-The objective of this project is to demonstrate an end-to-end modern Data Engineering workflow.
+✅ Automated data ingestion
 
-The pipeline performs:
+✅ Data quality validation
 
-- Data ingestion into PostgreSQL
-- Data quality validation
-- Data transformation using dbt
-- Historical tracking with snapshots (SCD Type 2)
-- Dimensional modeling
-- Fact table generation
-- Workflow orchestration with Airflow
-- Automated testing with Pytest and dbt tests
+✅ Dead Letter Queue for invalid records
+
+✅ dbt transformations
+
+✅ Incremental processing
+
+✅ SCD Type 2 implementation
+
+✅ Dimensional Modeling
+
+✅ Fact and Dimension tables
+
+✅ Workflow orchestration with Airflow
+
+✅ Automated testing
 
 ---
 
@@ -49,19 +554,19 @@ The pipeline performs:
 
 ```text
                 +------------------+
-                |   Source Data    |
+                | Source Systems   |
                 +---------+--------+
                           |
                           v
                 +------------------+
                 |      Bronze      |
-                | Raw Source Data  |
+                | Raw Data Layer   |
                 +---------+--------+
                           |
                           v
                 +------------------+
                 |      Silver      |
-                | Cleaned Data     |
+                | Cleansed Data    |
                 | Business Rules   |
                 +---------+--------+
                           |
@@ -85,269 +590,456 @@ The pipeline performs:
 PRJ_PIPELINE_DBT_DW
 │
 ├── dags/
-│   ├── customer_dimension_pipeline.py
-│   └── sales_pipeline_dw.py
-│
-├── data/
-│
-├── dbt_project/
-│
-├── models/
-│   ├── bronze/
-│   │   └── sources.yml
-│   │
-│   ├── silver/
-│   │
-│   ├── gold/
-│   │   ├── dimensions/
-│   │   └── facts/
-│   │
-│   └── marts/
-│
-├── snapshots/
-│   └── customer_snapshot.sql
+│   ├── sales_pipeline_dw.py
+│   └── customer_dimension_pipeline.py
 │
 ├── scripts/
+│   ├── create_tables.py
+│   ├── load_customers.py
+│   ├── load_sales.py
+│   ├── validation.py
+│   ├── logger_config.py
+│   ├── db_connection.py
+│   └── make_deadletter_json.py
+│
+├── dbt_project/
+│   ├── models/
+│   │   ├── bronze/
+│   │   ├── silver/
+│   │   └── gold/
+│   │
+│   ├── snapshots/
+│   │   └── customer_snapshot.sql
+│   │
+│   ├── tests/
+│   ├── logs/
+│   ├── profiles.yml
+│   └── dbt_project.yml
 │
 ├── tests/
 │
-├── workflows/
-│
-├── docker/
-│
 ├── docs/
 │
-├── dbt_project.yml
-├── profiles.yml
 ├── requirements.txt
-├── pytest.ini
 └── README.md
 ```
 
 ---
 
-# ⚙️ Technologies Used
+# ⚙️ Technologies
 
 | Technology | Purpose |
 |------------|----------|
-| Python | Pipeline Development |
+| Python | ETL Development |
 | PostgreSQL | Data Warehouse |
-| dbt Core | Data Transformation |
 | Apache Airflow | Workflow Orchestration |
+| dbt Core | Data Transformation |
 | Docker | Containerization |
-| Pytest | Unit Testing |
-| GitHub Actions | CI/CD |
+| Pytest | Automated Testing |
 | SQL | Data Modeling |
+| GitHub Actions | CI/CD |
 
 ---
 
-# 🔄 Data Pipeline Flow
+# 🔄 Pipeline Flow
 
-## 1. Bronze Layer
+## Step 1 – Raw Data Creation
 
-Raw data is ingested from source systems and registered as dbt sources.
+Airflow starts the pipeline by creating source tables:
+
+### raw_customers
+
+```sql
+customer_id
+customer_name
+city
+updated_at
+```
+
+### raw_sales
+
+```sql
+sale_id
+customer_id
+amount
+sale_date
+updated_at
+```
+
+---
+
+## Step 2 – Customer Load
+
+Customer records are inserted into the source table.
+
+Features:
+
+- Upsert strategy
+- Random city assignment
+- Timestamp tracking
 
 Example:
 
-```sql
-source('public', 'customers')
-source('public', 'sales')
+```python
+ON CONFLICT(customer_id)
+DO UPDATE
 ```
 
-### Responsibilities
+---
 
-- Store raw data
+## Step 3 – Sales Load
+
+Sales are generated automatically.
+
+Features:
+
+- Random amounts
+- Customer assignment
+- Validation process
+
+Generated fields:
+
+```text
+order_id
+customer_id
+amount
+purchase_date
+```
+
+---
+
+## Step 4 – Data Validation
+
+Every sale is validated before insertion.
+
+Example rules:
+
+```text
+Amount must be greater than zero
+Required fields cannot be null
+```
+
+Invalid records are redirected to Dead Letter Queue.
+
+---
+
+## Step 5 – Dead Letter Queue
+
+Invalid records are stored as JSON.
+
+Example:
+
+```json
+{
+  "record": {
+    "order_id": 10,
+    "amount": -50
+  },
+  "error": "Amount cannot be negative"
+}
+```
+
+Benefits:
+
+- Error auditing
+- Reprocessing capability
+- Data quality monitoring
+
+---
+
+# 🥉 Bronze Layer
+
+The Bronze layer contains raw source data.
+
+Tables:
+
+```text
+raw_customers
+raw_sales
+```
+
+Responsibilities:
+
 - Preserve source structure
+- Store original data
 - Enable lineage tracking
 
 ---
 
-## 2. Silver Layer
+# 🥈 Silver Layer
 
-Data is standardized and cleansed.
+The Silver layer standardizes and cleanses data.
 
-Typical transformations:
+Models:
 
-- Null handling
+```text
+stg_customers
+stg_sales
+```
+
+Transformations:
+
 - Data type standardization
-- Deduplication
-- Business rule validation
+- Null handling
+- Data quality checks
+- Naming conventions
 
----
-
-## 3. Gold Layer
-
-Business-ready analytical models.
-
-Contains:
-
-### Dimensions
-
-- Dim Customer
-- Dim Date
-
-### Facts
-
-- Fact Sales
-
----
-
-# 📊 Data Modeling
-
-This project follows the **Kimball Dimensional Modeling** approach.
-
-## Star Schema
-
-```text
-              +--------------+
-              |  Dim_Date    |
-              +------+-------+
-                     |
-                     |
-+--------------+     |
-| Dim_Customer |-----+
-+------+-------+     |
-       |             |
-       |             |
-       v             v
-      +------------------+
-      |    Fact_Sales    |
-      +------------------+
-```
-
-### Benefits
-
-- Fast analytical queries
-- Simpler BI integration
-- Better reporting performance
-- Clear business definitions
-
----
-
-# 🕒 Snapshots (SCD Type 2)
-
-The project uses dbt snapshots to maintain customer history.
-
-File:
-
-```text
-snapshots/customer_snapshot.sql
-```
-
-Tracked fields:
-
-- customer_name
-- city
-- other customer attributes
-
-dbt automatically creates:
-
-```sql
-dbt_valid_from
-dbt_valid_to
-```
-
-This enables:
-
-- Historical analysis
-- Customer evolution tracking
-- Point-in-time reporting
-
----
-
-# 🌬️ Airflow DAGs
-
-## Customer Dimension Pipeline
-
-```text
-customer_dimension_pipeline.py
-```
-
-Responsible for:
-
-1. Run Snapshot
-2. Build Customer Dimension
-3. Execute Data Quality Tests
-
----
-
-## Sales Pipeline
-
-```text
-sales_pipeline_dw.py
-```
-
-Responsible for:
-
-1. Load Sales Data
-2. Build Fact Table
-3. Execute dbt Tests
-
----
-
-# ✅ Testing
-
-## Pytest
-
-Run unit tests:
+Execution:
 
 ```bash
-pytest
-```
-
-Or:
-
-```bash
-pytest -v
+dbt run --select silver
 ```
 
 ---
 
-## dbt Tests
+# 📸 Customer Snapshot (SCD Type 2)
 
-Run all tests:
+The project implements historical tracking using dbt snapshots.
+
+Snapshot:
+
+```text
+customer_snapshot
+```
+
+Strategy:
+
+```yaml
+strategy: timestamp
+```
+
+Tracked field:
+
+```yaml
+updated_at
+```
+
+Benefits:
+
+- Historical customer changes
+- Point-in-time analysis
+- Slowly Changing Dimension Type 2
+
+Execution:
+
+```bash
+dbt snapshot
+```
+
+---
+
+# 🥇 Gold Layer
+
+The Gold layer contains analytical models.
+
+## Dimension: dim_customer
+
+Stores customer history.
+
+Attributes:
+
+```text
+customer_sk
+customer_id
+customer_name
+city
+valid_from
+valid_to
+current_flag
+```
+
+Characteristics:
+
+- Surrogate key
+- SCD Type 2
+- Historical tracking
+
+---
+
+## Dimension: dim_date
+
+Date dimension used by facts.
+
+Attributes:
+
+```text
+date_sk
+full_date
+year
+month
+quarter
+day_of_week
+```
+
+Benefits:
+
+- Faster reporting
+- Standardized calendar analysis
+
+---
+
+## Fact Table: fact_sales
+
+Central analytical fact table.
+
+Attributes:
+
+```text
+sale_id
+customer_sk
+date_sk
+amount
+sale_date
+updated_at
+```
+
+Relationships:
+
+```text
+fact_sales
+    |
+    +---- dim_customer
+    |
+    +---- dim_date
+```
+
+Execution:
+
+```bash
+dbt run --select gold.facts
+```
+
+---
+
+# 🔄 Airflow Orchestration
+
+Main DAG:
+
+```text
+sales_pipeline_dw
+```
+
+Execution Flow:
+
+```text
+create_tables
+        ↓
+load_customers
+        ↓
+load_sales
+        ↓
+dbt_silver
+        ↓
+dbt_snapshot
+        ↓
+dbt_dimensions
+        ↓
+dbt_fact
+        ↓
+dbt_test
+```
+
+Schedule:
+
+```python
+@daily
+```
+
+Catchup:
+
+```python
+False
+```
+
+---
+
+# ✅ Data Quality
+
+dbt tests validate:
+
+```text
+not_null
+unique
+relationships
+accepted_values
+```
+
+Execution:
 
 ```bash
 dbt test
 ```
 
-Examples:
+Benefits:
 
-```yaml
-tests:
-  - not_null
-  - unique
+- Data reliability
+- Referential integrity
+- Automated quality checks
+
+---
+
+# 🧪 Testing
+
+Framework:
+
+```text
+Pytest
+```
+
+Suggested Tests:
+
+### Unit Tests
+
+```text
+validate_sale()
+create_tables()
+load_customers()
+load_sales()
+```
+
+### Integration Tests
+
+```text
+Database Connection
+Data Loading
+dbt Models
+Airflow DAGs
+```
+
+Execution:
+
+```bash
+pytest
 ```
 
 ---
 
-# 🐳 Installation
+# 🚀 Installation
 
 ## Clone Repository
 
 ```bash
-git clone https://github.com/your-user/PRJ_PIPELINE_DBT_DW.git
-
+git clone <repository-url>
 cd PRJ_PIPELINE_DBT_DW
 ```
 
 ---
 
-## Create Virtual Environment
-
-### Linux / Mac
+## Create Environment
 
 ```bash
 python -m venv venv
+```
 
+Linux / Mac:
+
+```bash
 source venv/bin/activate
 ```
 
-### Windows
+Windows:
 
 ```bash
-python -m venv venv
-
 venv\Scripts\activate
 ```
 
@@ -361,138 +1053,133 @@ pip install -r requirements.txt
 
 ---
 
-# 🚀 Execution
+# 🐳 Docker Execution
 
-## Validate Connection
+Build:
 
 ```bash
-dbt debug
+docker compose build
+```
+
+Start:
+
+```bash
+docker compose up -d
+```
+
+Verify:
+
+```bash
+docker ps
 ```
 
 ---
 
-## Load Sources
+# 📊 dbt Commands
+
+Run Silver Models:
 
 ```bash
-dbt seed
+dbt run --select silver
 ```
 
----
-
-## Execute Snapshots
+Run Dimensions:
 
 ```bash
-dbt snapshot
+dbt run --select gold.dimensions
 ```
 
----
+Run Facts:
 
-## Execute Models
+```bash
+dbt run --select gold.facts
+```
+
+Run Everything:
 
 ```bash
 dbt run
 ```
 
----
-
-## Execute Tests
-
-```bash
-dbt test
-```
-
----
-
-## Generate Documentation
-
-```bash
-dbt docs generate
-
-dbt docs serve
-```
-
----
-
-# 🛠️ Useful Commands
-
-## Run Specific Model
-
-```bash
-dbt run --select dim_customer
-```
-
----
-
-## Run Fact Models
-
-```bash
-dbt run --select facts
-```
-
----
-
-## Run Dimensions
-
-```bash
-dbt run --select dimensions
-```
-
----
-
-## Run Snapshots
+Snapshot:
 
 ```bash
 dbt snapshot
 ```
 
----
-
-## Execute Airflow DAGs
+Tests:
 
 ```bash
-airflow dags list
+dbt test
 ```
 
-```bash
-airflow dags trigger sales_pipeline_dw
-```
+Documentation:
 
 ```bash
-airflow dags trigger customer_dimension_pipeline
+dbt docs generate
+dbt docs serve
 ```
 
 ---
 
-# 📈 CI/CD
-
-GitHub Actions can be configured to automatically execute:
+# 📈 Data Warehouse Model
 
 ```text
-✔ dbt debug
-✔ dbt run
-✔ dbt test
-✔ pytest
+               dim_customer
+                     |
+                     |
+                     |
+                fact_sales
+                     |
+                     |
+                     |
+                  dim_date
 ```
 
-On every:
+Model Type:
 
-- Push
-- Pull Request
+```text
+Star Schema
+```
+
+Methodology:
+
+```text
+Kimball
+```
+
+---
+
+# 🎯 Learning Objectives
+
+This project demonstrates:
+
+- Data Warehouse Design
+- Kimball Modeling
+- Medallion Architecture
+- Apache Airflow Orchestration
+- dbt Development
+- Incremental Processing
+- SCD Type 2
+- Data Quality Engineering
+- PostgreSQL Administration
+- Docker Containerization
+- CI/CD Readiness
 
 ---
 
 # 🔮 Future Improvements
 
-- CDC integration using Debezium
-- Kafka event ingestion
-- Schema Registry integration
-- Data Quality monitoring with Great Expectations
+- CDC with Debezium
+- Kafka Integration
+- Schema Registry
+- Great Expectations
+- Data Contracts
+- OpenLineage
 - Data Observability
-- Cloud deployment (AWS / Azure / GCP)
+- CI/CD with GitHub Actions
+- Cloud Deployment (AWS/GCP/Azure)
 - dbt Semantic Layer
-- Data Catalog integration
-- Incremental Fact Processing
-- Lakehouse Architecture support
 
 ---
 
@@ -500,20 +1187,17 @@ On every:
 
 **Vitor Melo**
 
-Data Engineer | Analytics Engineer | BI Specialist
+Data Engineer | BI Engineer | Analytics Engineer
 
-### Expertise
+Specialized in:
 
 - Data Warehousing
-- Dimensional Modeling
-- dbt
+- ETL / ELT
+- Kimball Modeling
 - Apache Airflow
+- dbt
 - PostgreSQL
-- Python
-- Kafka & CDC
-- Oracle Analytics
-- ETL / ELT Pipelines
+- Kafka
+- CDC (Debezium)
+- Modern Data Platforms
 
----
-
-⭐ If you found this project useful, consider giving it a star on GitHub.
