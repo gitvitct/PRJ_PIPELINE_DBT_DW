@@ -1,0 +1,19 @@
+version: 2
+
+models:
+
+  - name: fact_sales
+
+    columns:
+
+      - name: sale_id
+
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_sk
+
+        tests:
+          - not_null
+

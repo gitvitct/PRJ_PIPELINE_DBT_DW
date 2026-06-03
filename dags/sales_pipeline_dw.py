@@ -9,17 +9,14 @@ from scripts.create_tables import create_tables
 from scripts.load_customers import load_customers
 from scripts.load_sales import load_sales
 
+
 with DAG(
 
     dag_id="sales_pipeline_dw",
-
-    start_date=datetime(2026,1,1),
-
+    start_date=datetime(2026, 1, 1),
     schedule="@daily",
-
     catchup=False,
-
-    tags=["dbt","airflow","medallion"]
+    tags=["dbt", "airflow", "medallion"]
 
 ) as dag:
 
@@ -36,6 +33,14 @@ with DAG(
     load_sales_task = PythonOperator(
         task_id="load_sales",
         python_callable=load_sales
+    )
+
+    dbt_snapshot = BashOperator(
+        task_id="dbt_snapshot",
+        bash_command="""
+        cd /opt/airflow/dbt_project &&
+        dbt snapshot
+        """
     )
 
     dbt_run = BashOperator(
@@ -58,6 +63,8 @@ with DAG(
 
     load_customers_task >> load_sales_task
 
-    load_sales_task >> dbt_run
+    load_sales_task >> dbt_snapshot
+
+    dbt_snapshot >> dbt_run
 
     dbt_run >> dbt_test

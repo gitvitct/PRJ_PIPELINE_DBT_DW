@@ -17,11 +17,27 @@ clean-targets:
 
 log-path: logs
 
+
 models:
+
   sales_pipeline_dw:
-  
+
+    bronze:
+      +materialized: view
+
     silver:
       +materialized: incremental
 
     gold:
-      +materialized: table
+      dimensions:
+        +materialized: table
+
+      facts:
+        +materialized: incremental
+
+      marts:
+        +materialized: table   
+
+
+        models:
+ 
