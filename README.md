@@ -1,38 +1,3 @@
-
-
-
-
-Resgatar oferta
-
-projeto_documentacao(1).zip
-Arquivo zip
-crie um readme e docuemntacao do ficherio anexado:
-
-Pensamento interrompido
-Analisei o projeto compactado e ele já possui uma estrutura bastante completa de Engenharia de Dados com:
-
-Apache Airflow
-
-dbt
-
-PostgreSQL
-
-Docker
-
-Pytest
-
-Arquitetura Medallion (Bronze → Silver → Gold)
-
-Modelagem Dimensional Kimball
-
-Snapshot SCD Type 2
-
-Data Quality
-
-Dead Letter Queue
-
-Abaixo está uma documentação profissional que você pode utilizar como README.md principal do repositório.
-
 🚀 PRJ_PIPELINE_DBT_DW
 Modern Data Warehouse project built with Python, PostgreSQL, Apache Airflow, dbt, Docker and Pytest, implementing Medallion Architecture and Kimball Dimensional Modeling.
 
