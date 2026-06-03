@@ -24,20 +24,17 @@ models:
 
     bronze:
       +materialized: view
-
     silver:
       +materialized: incremental
 
     gold:
       dimensions:
         +materialized: table
-
       facts:
         +materialized: incremental
 
-      marts:
+    marts:
         +materialized: table   
 
 
-        models:
  

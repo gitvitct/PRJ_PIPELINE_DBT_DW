@@ -66,6 +66,85 @@ The pipeline simulates the ingestion, validation, transformation, historization 
                 +------------------+
 ```
 
+# 🚀 Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/gitvitct/PRJ_PIPELINE_DBT_DW.git
+cd PRJ_PIPELINE_DBT_DW
+```
+
+---
+
+
+## ⚙️ Environment Initialization (Bootstrap)
+
+Navigate to the Docker directory:
+
+```bash
+cd ${prj_dir}/PRJ_PIPE_PG_DBT_AIRFLOW_GIT/docker
+```
+
+Grant execution permission:
+
+```bash
+chmod +x bootstrap.sh
+```
+
+Start the complete environment:
+
+```bash
+./bootstrap.sh
+```
+
+### What the Bootstrap Script Does
+
+The script automatically performs the following tasks:
+
+* Creates the `.env` file
+* Defines environment variables
+* Creates PostgreSQL databases (`AIRFLOW_DB` and `DW_DB`)
+* Configures default credentials (`admin/admin`)
+* Builds Docker images (Airflow, dbt, PostgreSQL)
+* Starts Docker Compose services
+* Creates log directories and permissions
+* Initializes the Airflow metadata database
+
+### Services Started
+
+* PostgreSQL
+* pgAdmin
+* Airflow Webserver
+* Airflow Scheduler
+* Airflow Triggerer
+
+---
+
+
+
+
+# 🐳 Docker Execution
+
+Build:
+
+```bash
+docker compose build
+```
+
+Start:
+
+```bash
+docker compose up -d
+```
+
+Verify:
+
+```bash
+docker ps
+```
+
+
 ---
 
 # 📂 Project Structure
@@ -497,65 +576,6 @@ pytest
 ```
 
 ---
-
-# 🚀 Installation
-
-## Clone Repository
-
-```bash
-git clone <repository-url>
-cd PRJ_PIPELINE_DBT_DW
-```
-
----
-
-## Create Environment
-
-```bash
-python -m venv venv
-```
-
-Linux / Mac:
-
-```bash
-source venv/bin/activate
-```
-
-Windows:
-
-```bash
-venv\Scripts\activate
-```
-
----
-
-## Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-# 🐳 Docker Execution
-
-Build:
-
-```bash
-docker compose build
-```
-
-Start:
-
-```bash
-docker compose up -d
-```
-
-Verify:
-
-```bash
-docker ps
-```
 
 ---
 
