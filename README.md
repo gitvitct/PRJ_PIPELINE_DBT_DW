@@ -83,7 +83,7 @@ cd PRJ_PIPELINE_DBT_DW
 Navigate to the Docker directory:
 
 ```bash
-cd /PRJ_PIPELINE_DBT_DW/docker
+cd PRJ_PIPELINE_DBT_DW/docker
 ```
 
 Grant execution permission:
