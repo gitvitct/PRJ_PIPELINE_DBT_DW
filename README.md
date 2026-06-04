@@ -1,3 +1,7 @@
+![Pytest](https://github.com/gitvitct/PRJ_PIPELINE_DBT_DW/actions/workflows/pytest.yml/badge.svg)
+
+![DBT](https://github.com/gitvitct/PRJ_PIPELINE_DBT_DW/actions/workflows/dbt-ci.yml/badge.svg)
+
 # 🚀 PRJ_PIPELINE_DBT_DW
 
 Modern Data Warehouse project built with Python, PostgreSQL, Apache Airflow, dbt, Docker and Pytest, implementing Medallion Architecture and Kimball Dimensional Modeling.
