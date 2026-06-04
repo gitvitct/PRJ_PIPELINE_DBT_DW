@@ -1,4 +1,4 @@
-# 🚀 PRJ_PIPELINE_DBT_DW - Installation, Execution and Architecture
+# 🚀 Architecture
 
 Modern Data Warehouse project built with Python, PostgreSQL, Apache Airflow, dbt, Docker and Pytest, implementing Medallion Architecture and Kimball Dimensional Modeling.
 
