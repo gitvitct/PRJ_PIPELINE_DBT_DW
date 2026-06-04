@@ -671,6 +671,3 @@ This project demonstrates:
 - CI/CD Readiness
 
 ---
-
-
-![alt text](image.png)
