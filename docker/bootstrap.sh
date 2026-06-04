@@ -45,7 +45,7 @@ echo "========================================="
 echo "Ajustando permissões do dbt"
 echo "========================================="
 
-#sudo chown -R 50000:root ../dbt_project/
+sudo chown -R 50000:root ../dbt_project/
 
 
 echo ""
@@ -53,7 +53,7 @@ echo "========================================="
 echo "Ajustando permissões do LOG"
 echo "========================================="
 
-#sudo chown -R 50000:root ../logs/
+sudo chown -R 50000:root ../logs/
 
 
 echo ""

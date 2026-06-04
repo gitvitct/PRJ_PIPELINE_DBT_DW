@@ -83,7 +83,7 @@ cd PRJ_PIPELINE_DBT_DW
 Navigate to the Docker directory:
 
 ```bash
-cd ${prj_dir}/PRJ_PIPE_PG_DBT_AIRFLOW_GIT/docker
+cd /PRJ_PIPELINE_DBT_DW/docker
 ```
 
 Grant execution permission:
@@ -654,7 +654,7 @@ Kimball
 
 ---
 
-# 🎯 Learning Objectives
+# 🎯 Objectives
 
 This project demonstrates:
 
