@@ -1,10 +1,6 @@
-# 🚀 Architecture
+# 📖 Overview
 
 Modern Data Warehouse project built with Python, PostgreSQL, Apache Airflow, dbt, Docker and Pytest, implementing Medallion Architecture and Kimball Dimensional Modeling.
-
----
-
-# 📖 Overview
 
 This project demonstrates a complete end-to-end Data Engineering workflow.
 
