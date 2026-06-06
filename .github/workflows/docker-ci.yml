@@ -43,12 +43,12 @@ jobs:
 
       - name: Verify Python
         run: |
-          docker run --rm airflow-custom python --version
+          docker run --rm --entrypoint python airflow-custom --version
 
       - name: Verify Airflow
         run: |
-          docker run --rm airflow-custom airflow version
+          docker run --rm --entrypoint airflow airflow-custom --version
 
       - name: Verify dbt
         run: |
-          docker run --rm airflow-custom dbt --version
+          docker run --rm --entrypoint dbt airflow-custom --version
