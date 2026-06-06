@@ -537,6 +537,20 @@ Benefits:
 
 ---
 
+# 🚀 CI/CD with GitHub Actions
+
+This project uses GitHub Actions to automatically validate code quality and project integrity on every push, pull request, or manual execution.
+
+The CI pipeline helps ensure that all components of the Data Warehouse remain functional and integrated.
+   ✅ Detect bugs before deployment
+   ✅ Prevent broken code from reaching production
+   ✅ Validate database connectivity
+   ✅ Automatically execute unit and integration tests
+   ✅ Improve repository reliability
+   ✅ Increase confidence during refactoring
+   ✅ Simulate enterprise-grade development workflows
+
+
 # 🧪 Testing
 
 Framework:
