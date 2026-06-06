@@ -19,7 +19,7 @@ from {{ ref('stg_sales') }} s
 
 inner join {{ ref('dim_customer') }} dc
     on s.customer_id = dc.customer_id
-   and s.sale_date >= dc.effective_date
+   and s.sale_date >= cast(dc.effective_date as date)
    and s.sale_date < dc.end_date
 
 inner join {{ ref('dim_date') }} dd
