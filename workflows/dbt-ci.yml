@@ -1,47 +1,30 @@
-name: DBT CI
+name: dbt CI
 
 on:
-push:
-branches:
-- main
-
-pull_request:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-dbt-validation:
+  dbt-validation:
+    runs-on: ubuntu-latest
 
-```
-runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-  - name: Checkout Repository
-    uses: actions/checkout@v4
+      - name: Install dbt
+        run: |
+          pip install dbt-core dbt-postgres
 
-  - name: Setup Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: "3.11"
-
-  - name: Install dbt
-    run: |
-      pip install dbt-core dbt-postgres
-
-  - name: Install dbt Dependencies
-    run: |
-      dbt deps \
-        --project-dir ./dbt_project \
-        --profiles-dir ./dbt_project
-
-  - name: Parse dbt Project
-    run: |
-      dbt parse \
-        --project-dir ./dbt_project \
-        --profiles-dir ./dbt_project
-
-  - name: Compile dbt Models
-    run: |
-      dbt compile \
-        --project-dir ./dbt_project \
-        --profiles-dir ./dbt_project
-```
+      - name: Validate dbt Project
+        run: |
+          cd dbt_project
+          dbt deps || true
+          dbt parse

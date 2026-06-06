@@ -1,35 +1,41 @@
 name: Docker CI
 
 on:
-push:
-branches:
-- main
-
-pull_request:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-docker-build:
+  docker-build:
+    runs-on: ubuntu-latest
 
-```
-runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-  - name: Checkout Repository
-    uses: actions/checkout@v4
+      - name: Validate Docker Compose
+        run: |
+          docker compose -f docker/docker-compose.yml config
 
-  - name: Set up Docker Buildx
-    uses: docker/setup-buildx-action@v3
+      - name: Build Image
+        run: |
+          docker build \
+            -t airflow-custom \
+            -f docker/Dockerfile \
+            docker
 
-  - name: Validate Docker Compose
-    run: |
-      docker compose -f docker-compose.yml config
+      - name: Verify Python
+        run: |
+          docker run --rm airflow-custom python --version
 
-  - name: Build Airflow Image
-    run: |
-      docker build -t airflow-custom -f Dockerfile .
+      - name: Verify Airflow
+        run: |
+          docker run --rm airflow-custom airflow version
 
-  - name: Verify Image Creation
-    run: |
-      docker images
-```
+      - name: Verify dbt
+        run: |
+          docker run --rm airflow-custom dbt --version

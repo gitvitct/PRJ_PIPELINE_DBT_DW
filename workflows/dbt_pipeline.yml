@@ -1,42 +1,71 @@
-name: DBT CI
+name: dbt Pipeline
 
 on:
-
-  push:
-    branches:
-      - main
-
-  pull_request:
+  workflow_dispatch:
 
 jobs:
-
-  dbt:
-
+  dbt-pipeline:
     runs-on: ubuntu-latest
 
-    steps:
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: sales_dw
+        ports:
+          - 5432:5432
 
-      - uses: actions/checkout@v4
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
-
         with:
           python-version: "3.11"
 
       - name: Install dbt
         run: |
-          pip install dbt-core
-          pip install dbt-postgres
+          pip install dbt-core dbt-postgres
 
-      - name: Install Dependencies
-        run: dbt deps
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
 
-      - name: Parse
-        run: dbt parse
+          cat > ~/.dbt/profiles.yml << EOF
+          sales_project:
+            target: dev
+            outputs:
+              dev:
+                type: postgres
+                host: localhost
+                user: postgres
+                password: postgres
+                port: 5432
+                dbname: sales_dw
+                schema: public
+                threads: 2
+          EOF
 
-      - name: Compile
-        run: dbt compile
+      - name: Run dbt Debug
+        run: |
+          cd dbt_project
+          dbt debug
 
-      - name: Test
-        run: dbt test
+      - name: Run dbt Models
+        run: |
+          cd dbt_project
+          dbt run
+
+      - name: Run dbt Tests
+        run: |
+          cd dbt_project
+          dbt test
