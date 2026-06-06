@@ -8,18 +8,37 @@ on:
 
 jobs:
   tests:
+
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: sales_dw
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd "pg_isready -U admin"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
-        POSTGRES_HOST: postgres
-        POSTGRES_PORT: 5432
-        POSTGRES_USER: admin
-        POSTGRES_PASSWORD: admin
-        DW_DB: sales_dw
-        POSTGRES_SCHEMA: public
-        DBT_THREADS: 2
-        AIRFLOW_DB: airflow
-        DBT_TARGET: dev
-        POSTGRES_DB: POSTGRES_DB    
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      DW_DB: sales_dw
+      POSTGRES_SCHEMA: public
+      AIRFLOW_DB: airflow
+      DBT_TARGET: dev
+      DBT_THREADS: 2
 
     strategy:
       matrix:
@@ -37,8 +56,16 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+          pip install pytest psycopg2-binary
+
+      - name: Wait for PostgreSQL
+        run: |
+          sleep 15
 
       - name: Run Tests
         run: |
