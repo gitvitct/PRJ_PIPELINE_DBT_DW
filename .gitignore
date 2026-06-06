@@ -11,19 +11,11 @@ airflow.db
 target/
 dbt_packages/
 
-customer_dimension_pipeline.py
-.gitignore
-
-tests/dbt*
-tests/e2e*
-
 .idea/
 .vscode/
 
 data/deadletter/
 
 projeto_documentacao.zip
-docker-compose-bkp.yml
-Dockerfile-bkp
 
-.gitignore
+
