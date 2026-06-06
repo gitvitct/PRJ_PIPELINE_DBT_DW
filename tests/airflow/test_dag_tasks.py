@@ -1,25 +1,32 @@
-# tests/integration/test_dag_tasks.py
-# DagBag É como um "catálogo" de DAGs.
+# tests/airflow/test_dag_tasks.py
 
 from airflow.models import DagBag
 
 
 def test_dag_tasks():
 
-    dagbag = DagBag()
+    dagbag = DagBag(
+        dag_folder="dags",
+        include_examples=False
+    )
 
-    dag = dagbag.get_dag("sales_pipeline_dw")
+    assert dagbag.import_errors == {}
 
-    assert dag is not None
+    dag = dagbag.dags["sales_pipeline_dw"]
 
     task_ids = dag.task_ids
 
-    assert "create_tables" in task_ids
-    assert "load_customers" in task_ids
-    assert "load_sales" in task_ids
-    assert "dbt_silver" in task_ids
-    assert "dbt_snapshot" in task_ids
-    assert "dbt_dimensions" in task_ids
-    assert "dbt_fact" in task_ids
-    assert "dbt_marts" in task_ids
-    assert "dbt_test" in task_ids
+    expected_tasks = [
+        "create_tables",
+        "load_customers",
+        "load_sales",
+        "dbt_silver",
+        "dbt_snapshot",
+        "dbt_dimensions",
+        "dbt_fact",
+        "dbt_marts",
+        "dbt_test"
+    ]
+
+    for task in expected_tasks:
+        assert task in task_ids

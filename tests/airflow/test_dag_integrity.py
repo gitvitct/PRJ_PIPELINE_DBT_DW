@@ -2,31 +2,42 @@
 
 from airflow.models import DagBag
 
-#############################################################################################
-def test_dag_loaded():
 
-    dagbag = DagBag()
+def get_dag():
+
+    dagbag = DagBag(
+        dag_folder="dags",
+        include_examples=False
+    )
 
     assert dagbag.import_errors == {}
 
+    return dagbag.dags["sales_pipeline_dw"]
 
 
 #############################################################################################
-def test_sales_pipeline_exists():
 
-    dagbag = DagBag()
+def test_dag_loaded():
 
-    dag = dagbag.get_dag("sales_pipeline_dw")
+    dag = get_dag()
 
     assert dag is not None
 
 
 #############################################################################################
+
+def test_sales_pipeline_exists():
+
+    dag = get_dag()
+
+    assert dag.dag_id == "sales_pipeline_dw"
+
+
+#############################################################################################
+
 def test_tasks_exist():
 
-    dagbag = DagBag()
-
-    dag = dagbag.get_dag("sales_pipeline_dw")
+    dag = get_dag()
 
     expected_tasks = [
         "create_tables",
@@ -45,11 +56,10 @@ def test_tasks_exist():
 
 
 #############################################################################################
+
 def test_task_dependencies():
 
-    dagbag = DagBag()
-
-    dag = dagbag.get_dag("sales_pipeline_dw")
+    dag = get_dag()
 
     create_table = dag.get_task("create_tables")
 
