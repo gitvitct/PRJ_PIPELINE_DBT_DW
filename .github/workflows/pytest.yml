@@ -30,7 +30,7 @@ jobs:
           --health-retries 5
 
     env:
-      POSTGRES_HOST: postgres
+      POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
