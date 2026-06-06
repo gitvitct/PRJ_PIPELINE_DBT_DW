@@ -1,11 +1,11 @@
 # tests/integration/test_create_tables.py
 
-from scripts.create_tables import create_table
+from scripts.create_tables import create_tables
 
 
 def test_create_raw_sales_table(db_connection):
 
-    create_table()
+    create_tables()
 
     cursor = db_connection.cursor()
 

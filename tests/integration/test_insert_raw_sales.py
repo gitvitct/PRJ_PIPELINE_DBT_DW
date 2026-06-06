@@ -10,14 +10,14 @@ def test_insert_raw_sale(db_connection):
     # massa de teste
     customer_id = 1
     amount = 150.00
-    purchase_date = datetime.now()
+    sale_date = datetime.now()
 
     # insert
     insert_sql = """
         INSERT INTO public.raw_sales (
             customer_id,
             amount,
-            purchase_date
+            sale_date
         )
         VALUES (%s, %s, %s)
     """
@@ -27,7 +27,7 @@ def test_insert_raw_sale(db_connection):
         (
             customer_id,
             amount,
-            purchase_date
+            sale_date
         )
     )
 
@@ -40,7 +40,7 @@ def test_insert_raw_sale(db_connection):
             amount
         FROM public.raw_sales
         WHERE customer_id = %s
-        ORDER BY purchase_date DESC
+        ORDER BY sale_date DESC
         LIMIT 1
     """, (customer_id,))
 

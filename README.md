@@ -120,7 +120,7 @@ The script automatically performs the following tasks:
 
 
 
-# 🐳 Docker Execution
+# 🐳 Docker Execution/Verification
 
 Build:
 

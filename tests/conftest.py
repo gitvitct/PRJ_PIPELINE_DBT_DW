@@ -4,7 +4,7 @@ import pytest
 import psycopg2
 import os
 
-from scripts.create_tables import create_table
+from scripts.create_tables import create_tables
 
 
 @pytest.fixture(scope="session")
@@ -28,7 +28,7 @@ def setup_database():
     """
     Garante que a tabela exista antes dos testes.
     """
-    create_table()
+    create_tables()
 
 
 @pytest.fixture(autouse=True)

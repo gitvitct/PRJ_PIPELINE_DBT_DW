@@ -2,14 +2,15 @@
 
 import subprocess
 
-from scripts.create_tables import create_table
+from scripts.create_tables import create_tables
 from scripts.load_sales import load_sales
+from scripts.load_customers import load_customers
 
 
 def test_end_to_end_pipeline(db_connection):
 
-    create_table()
-
+    create_tables()
+    load_customers()
     load_sales()
 
     subprocess.run(

@@ -1,7 +1,7 @@
 {{
 config(
-    materialized='incremental',
-    unique_key='sale_id',
+    materialized='incremental',    
+    unique_key=['sale_id', 'customer_sk'],
     incremental_strategy='merge'
 )
 }}

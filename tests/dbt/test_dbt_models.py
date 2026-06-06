@@ -117,7 +117,7 @@ def test_sales_summary_has_data(db_connection):
 
     cursor.execute("""
         INSERT INTO raw_sales
-        (order_id, customer_id, amount, purchase_date)
+        (sale_id, customer_id, amount, sale_date)
         VALUES
         (1, 1, 100, NOW()),
         (2, 2, 200, NOW()),

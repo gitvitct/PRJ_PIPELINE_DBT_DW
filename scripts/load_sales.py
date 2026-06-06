@@ -18,11 +18,11 @@ def load_sales():
 
     try:
 
-        for i in range(1, 101):
+        for i in range(1, 201):
 
             sale = {
                 "order_id": i,
-                "customer_id": random.randint(1, 20),
+                "customer_id": random.randint(1, 7),
                 "amount": round(random.uniform(-50, 500), 2),
                 "purchase_date": datetime.now().strftime(
                     "%Y-%m-%d %H:%M:%S"

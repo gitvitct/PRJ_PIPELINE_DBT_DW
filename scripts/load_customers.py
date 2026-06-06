@@ -7,7 +7,8 @@ cities = [
     "Florianopolis",
     "Sao Paulo",
     "Curitiba",
-    "Porto Alegre"
+    "Porto Alegre",
+    "Maringá"
 ]
 
 def load_customers():
@@ -19,9 +20,11 @@ def load_customers():
 
         (1, "Joao Silva"),
         (2, "Maria Souza"),
-        (3, "Pedro Santos"),
+        (3, "Rock Balboa"),
         (4, "Ana Costa"),
-        (5, "Carlos Lima")
+        (5, "Mano Brown"),
+        (6, "Vitor Melo"),
+        (7, "Jon Bone Jones")
     ]
 
     for customer in customers:

@@ -55,6 +55,7 @@ with DAG(
         task_id="dbt_silver",
         bash_command="""
         cd /opt/airflow/dbt_project &&
+        dbt deps &&
         dbt run --select silver
         """
     )
@@ -84,6 +85,7 @@ with DAG(
         task_id="dbt_dimensions",
         bash_command="""
         cd /opt/airflow/dbt_project &&
+        dbt deps &&
         dbt run --select gold.dimensions
         """
     )
@@ -98,9 +100,26 @@ with DAG(
         task_id="dbt_fact",
         bash_command="""
         cd /opt/airflow/dbt_project &&
+        dbt deps &&
         dbt run --select gold.facts
         """
     )
+
+    # =================================================================
+    # MARTS - FACTS
+    # Executa:
+    # - sales_summary
+    # =================================================================
+
+    dbt_marts = BashOperator(
+        task_id="dbt_marts",
+        bash_command="""
+        cd /opt/airflow/dbt_project &&
+        dbt deps &&
+        dbt run --select marts
+        """
+    )
+
 
     # =================================================================
     # DATA QUALITY
@@ -110,6 +129,7 @@ with DAG(
         task_id="dbt_test",
         bash_command="""
         cd /opt/airflow/dbt_project &&
+        dbt deps &&
         dbt test
         """
     )
@@ -130,4 +150,6 @@ with DAG(
 
     dbt_dimensions >> dbt_fact
 
-    dbt_fact >> dbt_test
+    dbt_fact >> dbt_marts
+
+    dbt_marts >> dbt_test
