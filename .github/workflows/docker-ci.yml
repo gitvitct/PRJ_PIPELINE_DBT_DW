@@ -44,10 +44,11 @@ jobs:
       - name: Verify Python
         run: |
           docker run --rm --entrypoint python airflow-custom --version
+          
 
       - name: Verify Airflow
         run: |
-          docker run --rm --entrypoint airflow airflow-custom --version
+           docker run --rm --entrypoint airflow airflow-custom version
 
       - name: Verify dbt
         run: |
